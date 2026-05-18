@@ -86,9 +86,11 @@ def plan_prices(state, memory) -> dict[str, float]:
     # Late-game cash burn: days 26-30, push everything hard
     if state.days_remaining <= 4 and state.cash > 25_000:
         base_shift += 0.04
-    if state.walkout_rank >= 2 and not config.DISCOUNT_OFF:
-        base_shift += config.WALKOUT_DISCOUNT
-    if declining and rep_low and not config.DISCOUNT_OFF:
+    # Walkouts mean over-demand vs capacity — RAISE prices to suppress demand
+    if state.walkout_rank >= 2:
+        base_shift += 0.03  # opposite sign vs old WALKOUT_DISCOUNT
+    # Declining trend with low rep = safety mechanism, always active
+    if declining and rep_low:
         base_shift += config.DECLINING_DISCOUNT
     if memory.scen_tourist and state.day <= 3:
         # Tourist surge: max push. Demand exceeds capacity, every cover is profit.

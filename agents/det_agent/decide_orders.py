@@ -70,11 +70,9 @@ def plan_orders(state, memory, projection: dict, runway: dict) -> list[dict]:
                 kg_needed = max(5.0, daily_use * 3 * over_order)
                 needs.append((ing, kg_needed, "topup"))
 
-    # Supply crisis: front-load buffers on days 1-3 BEFORE fill rates collapse.
-    # FFN ingredients (Chicken, Lettuce, Mushrooms, Tomato) are sole-sourced — if
-    # FFN fails, half the menu dies. Stockpile heavy.
+    # Supply crisis: front-load AGGRESSIVELY on days 1-4 BEFORE fill rates collapse.
     if memory.scen_crisis and state.day <= 4:
-        # FFN sole-source ingredients — 10-day buffer
+        # FFN sole-source ingredients — buffer capped by shelf life (perishable)
         for ing in ["Tomato Sauce", "Mushrooms", "Lettuce", "Chicken"]:
             if ing in [n[0] for n in needs]:
                 continue
@@ -82,15 +80,26 @@ def plan_orders(state, memory, projection: dict, runway: dict) -> list[dict]:
             on_hand_kg = on_hand.total_kg if on_hand else 0.0
             pending_kg = state.pending_by_ingredient.get(ing, 0.0)
             daily_use = _compute_daily_use(state, memory, ing)
-            # Cap by shelf life — Lettuce/Mushrooms perish fast
             shelf = on_hand.shelf_life_days if on_hand else 7
-            buffer = min(10, max(5, shelf - 1))
+            buffer = min(12, max(5, shelf - 1))
             target = daily_use * buffer
             gap = max(0.0, target - on_hand_kg - pending_kg)
             if gap > 2.0:
                 needs.append((ing, gap * over_order, "crisis_buffer"))
-        # Dual-source ingredients — 7-day buffer
-        for ing in ["Flour", "Fresh Pasta", "Mozzarella", "Pepperoni"]:
+        # Dual-source dry ingredients — 14-day buffer (Flour/Pasta keep)
+        for ing in ["Flour", "Fresh Pasta", "Pepperoni"]:
+            if ing in [n[0] for n in needs]:
+                continue
+            on_hand = state.inventory.get(ing)
+            on_hand_kg = on_hand.total_kg if on_hand else 0.0
+            pending_kg = state.pending_by_ingredient.get(ing, 0.0)
+            daily_use = _compute_daily_use(state, memory, ing)
+            target = daily_use * 14
+            gap = max(0.0, target - on_hand_kg - pending_kg)
+            if gap > 2.0:
+                needs.append((ing, gap * over_order, "crisis_buffer"))
+        # Mozzarella (shelf ~7d) — 7-day buffer
+        for ing in ["Mozzarella"]:
             if ing in [n[0] for n in needs]:
                 continue
             on_hand = state.inventory.get(ing)

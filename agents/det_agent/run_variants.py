@@ -22,11 +22,12 @@ from pathlib import Path
 
 from . import champion
 
-# v7 champion config: v6_base_09 = 1.10/2/3 + base 0.09 + 0.08 premium + mkt heavy + 0.15 endgame
+# v8 champion config: no_disc_mega = mega + no discount + base 0.09 + 0.08 premium + mkt heavy + 0.15 endgame
 _CHAMP = {
-    "DET_OVER_ORDER": "1.10", "DET_BUFFER_FRESH": "2", "DET_BUFFER_DRY": "3",
+    "DET_OVER_ORDER": "1.05", "DET_BUFFER_FRESH": "2", "DET_BUFFER_DRY": "3",
     "DET_BASE_PRICE_SHIFT": "0.09", "DET_PREMIUM_EXTRA": "0.08",
     "DET_MARKETING_MODE": "heavy", "DET_END_GAME_LIFT": "0.15",
+    "DET_DISCOUNT_OFF": "1",
 }
 
 
@@ -38,14 +39,13 @@ def _merge(*configs):
 
 
 VARIANTS: dict[str, dict[str, str]] = {
-    # v7 focused: 4 highest-leverage bold ideas
-    "no_disc_mega":     _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_OVER_ORDER": "1.05"}),
-    "ultra_v7":         _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_OVER_ORDER": "1.05",
-                                         "DET_STAFF_DELTA": "-1",
-                                         "DET_BASE_PRICE_SHIFT": "0.10",
-                                         "DET_MARKETING_MODE": "off"}),
-    "no_mkt_only":      _merge(_CHAMP, {"DET_MARKETING_MODE": "off"}),
-    "lean_no_disc":     _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_STAFF_DELTA": "-1"}),
+    # v8: focused on champion + 5 perturbations (now with crisis +0.04 code fix)
+    "champ_v8":         _merge(_CHAMP),               # control = no_disc_mega + new code
+    "base_10_v8":       _merge(_CHAMP, {"DET_BASE_PRICE_SHIFT": "0.10"}),
+    "premium_10_v8":    _merge(_CHAMP, {"DET_PREMIUM_EXTRA": "0.10"}),
+    "weekend_v8":       _merge(_CHAMP, {"DET_WEEKEND_LIFT": "0.08"}),
+    "no_hh_v8":         _merge(_CHAMP, {"DET_HH_MODE": "off"}),
+    "no_hh_base10":     _merge(_CHAMP, {"DET_HH_MODE": "off", "DET_BASE_PRICE_SHIFT": "0.10"}),
 }
 
 EVAL_RUNS_DIR = Path("eval_runs")
