@@ -68,10 +68,9 @@ DOW_COVERS_PRIOR: dict[str, float] = {
 }
 
 # Target staff level by DOW — sized for actual demand, capped where table-bound.
-# Saturday and Friday peak hard — kitchen throughput matters; bump Sat to 14.
 DOW_STAFF: dict[str, int] = {
-    "Monday": 7, "Tuesday": 9, "Wednesday": 10, "Thursday": 12,
-    "Friday": 13, "Saturday": 14, "Sunday": 8,
+    "Monday": 7, "Tuesday": 9, "Wednesday": 10, "Thursday": 11,
+    "Friday": 13, "Saturday": 13, "Sunday": 9,
 }
 
 DOW_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]

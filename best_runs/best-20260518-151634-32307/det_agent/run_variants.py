@@ -22,11 +22,11 @@ from pathlib import Path
 
 from . import champion
 
-# v5 champion config: ultra_premium = 1.10/2/3 + 0.08/0.08 + mkt heavy + 0.10 endgame
+# Champion baseline = tight_hot_mkt: over_order=1.15, buffer 2/4, +0.08 base, +0.06 premium, mkt heavy
 _CHAMP = {
-    "DET_OVER_ORDER": "1.10", "DET_BUFFER_FRESH": "2", "DET_BUFFER_DRY": "3",
-    "DET_BASE_PRICE_SHIFT": "0.08", "DET_PREMIUM_EXTRA": "0.08",
-    "DET_MARKETING_MODE": "heavy", "DET_END_GAME_LIFT": "0.10",
+    "DET_OVER_ORDER": "1.15", "DET_BUFFER_FRESH": "2", "DET_BUFFER_DRY": "4",
+    "DET_BASE_PRICE_SHIFT": "0.08", "DET_PREMIUM_EXTRA": "0.06",
+    "DET_MARKETING_MODE": "heavy",
 }
 
 
@@ -38,26 +38,26 @@ def _merge(*configs):
 
 
 VARIANTS: dict[str, dict[str, str]] = {
-    # Control: reproduce champion with new code rules
-    "champ_v5":       _merge(_CHAMP),
-    # Push premium even harder
-    "prem_10":        _merge(_CHAMP, {"DET_PREMIUM_EXTRA": "0.10"}),
-    # Slightly higher base shift
-    "base_09":        _merge(_CHAMP, {"DET_BASE_PRICE_SHIFT": "0.09"}),
-    # Mega-tight orders
-    "mega_tight":     _merge(_CHAMP, {"DET_OVER_ORDER": "1.05"}),
-    # End-game push harder
-    "endgame_15":     _merge(_CHAMP, {"DET_END_GAME_LIFT": "0.15"}),
-    # Inflation prep (price all up by mid-game even without flag)
-    "midgame_push":   _merge(_CHAMP, {"DET_MID_GAME_LIFT": "0.05"}),
-    # Weekend lift bigger
-    "weekend_10":     _merge(_CHAMP, {"DET_WEEKEND_LIFT": "0.07"}),
-    # Combination: prem_10 + endgame_15 + weekend
-    "kitchen_sink":   _merge(_CHAMP, {"DET_PREMIUM_EXTRA": "0.10",
-                                       "DET_END_GAME_LIFT": "0.15",
-                                       "DET_WEEKEND_LIFT": "0.07"}),
-    # Lean staff combo
-    "lean_v5":        _merge(_CHAMP, {"DET_STAFF_DELTA": "-1"}),
+    # Control: reproduce champion
+    "champ":          _merge(_CHAMP),
+    # Ultra-tight orders combined with champion
+    "ultra_hot_mkt":  _merge(_CHAMP, {"DET_OVER_ORDER": "1.10", "DET_BUFFER_DRY": "3"}),
+    # Push premium dishes harder, less base shift
+    "premium_focus":  _merge(_CHAMP, {"DET_BASE_PRICE_SHIFT": "0.06", "DET_PREMIUM_EXTRA": "0.08"}),
+    # Push end-game pricing
+    "endgame_push":   _merge(_CHAMP, {"DET_END_GAME_LIFT": "0.10"}),
+    # Bigger weekend lift (Sat is huge demand)
+    "weekend_push":   _merge(_CHAMP, {"DET_WEEKEND_LIFT": "0.08"}),
+    # Build crisis buffer harder
+    "crisis_buf":     _merge(_CHAMP, {"DET_OVER_ORDER_CRISIS": "2.0"}),
+    # Tighter buffer + lower over_order ratio
+    "mega_tight":     _merge(_CHAMP, {"DET_OVER_ORDER": "1.05", "DET_BUFFER_DRY": "3"}),
+    # All combinations: ultra + premium + endgame
+    "ultra_premium":  _merge(_CHAMP, {"DET_OVER_ORDER": "1.10", "DET_BUFFER_DRY": "3",
+                                      "DET_PREMIUM_EXTRA": "0.08",
+                                      "DET_END_GAME_LIFT": "0.10"}),
+    # Bigger price overall: 0.10 / 0.07 (between hot=0.08/0.06 and very_hot=0.10/0.07 which failed)
+    "hot_plus":       _merge(_CHAMP, {"DET_BASE_PRICE_SHIFT": "0.09", "DET_PREMIUM_EXTRA": "0.07"}),
 }
 
 EVAL_RUNS_DIR = Path("eval_runs")

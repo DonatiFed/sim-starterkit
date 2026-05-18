@@ -1,15 +1,15 @@
 {
-  "avg_score": 25939.52333333333,
+  "avg_score": 32307.61333333333,
   "bankruptcies": 0,
   "n_games": 12,
   "scores_by_scenario": {
-    "baseline": 30928.4,
-    "renovation": 13669.3,
-    "supply_crisis": 17435.9,
-    "tourist_season": 41724.5
+    "baseline": 38441.8,
+    "renovation": 17517.7,
+    "supply_crisis": 24023.9,
+    "tourist_season": 49247.0
   },
-  "snapshot_dir": "best_runs/best-20260518-150238-25939",
-  "run_file": "eval_runs/run-20260518-145853-tight_hot_mkt.json",
-  "ts": "20260518-150238",
-  "label": "tight_hot_mkt"
+  "snapshot_dir": "best_runs/best-20260518-151634-32307",
+  "run_file": "eval_runs/run-20260518-151621-ultra_premium.json",
+  "ts": "20260518-151634",
+  "label": "ultra_premium"
 }

@@ -23,26 +23,15 @@ def plan_staff(state, memory) -> int:
     dow_default = DOW_STAFF.get(state.day_of_week, 6) + config.STAFF_DELTA
     target = max(capacity_staff, dow_default)
 
-    # Weekend + sunny + good rep → push to max (peak revenue day)
-    if (state.day_of_week in ("Friday", "Saturday")
-            and state.weather_today == "sunny"
-            and state.reputation_rank >= 3):
-        target = max(target, 14)
-
-    # Reactive bump if yesterday had walkouts on a similar day type
+    # Reactive bump if yesterday had walkouts or bottleneck hours
     if state.walkout_rank >= 2:  # Some/Many
-        # Big bump for Many (3) walkouts
-        bump = 2 if state.walkout_rank >= 3 else 1
-        target = max(target, state.staff_level + bump)
+        target = max(target, state.staff_level + 1)
     elif state.walkout_rank >= 1 and len(state.bottleneck_hours) >= 2:
         target = max(target, state.staff_level + 1)
 
-    # If yesterday utilization was low (<40%) AND no walkouts, trim staff
-    if state.walkout_rank == 0 and state.table_util_peak < 0.40 and state.day > 1:
+    # If yesterday utilization was low (<50%) AND no walkouts, trim staff
+    if state.walkout_rank == 0 and state.table_util_peak < 0.50 and state.day > 1:
         target = max(target - 1, capacity_staff)
-    # Aggressive trim on consecutive low-util days (Sun/Mon mostly)
-    if state.walkout_rank == 0 and state.table_util_peak < 0.25 and state.day > 1:
-        target = max(target - 2, 3)
 
     # Scenario adjustments
     # Renovation: capacity halved → kitchen rarely bottleneck. Cap staff hard.

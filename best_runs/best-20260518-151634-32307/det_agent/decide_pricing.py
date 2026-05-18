@@ -21,14 +21,6 @@ MID     = {"Spaghetti Carbonara", "Chicken Caesar Salad"}
 ELASTIC = {"Pizza Margherita", "Pizza Pepperoni"}
 
 
-# Per-DOW pricing modulation (additive on top of weekend/slow flags)
-# Saturday is peak — push prices. Sunday is dead — drop them.
-DOW_PRICE_DELTA: dict[str, float] = {
-    "Monday": -0.02, "Tuesday": 0.00, "Wednesday": 0.00, "Thursday": 0.02,
-    "Friday": 0.04, "Saturday": 0.06, "Sunday": -0.04,
-}
-
-
 def plan_prices(state, memory) -> dict[str, float]:
     """Return {dish: price} for each dish in active menu."""
     weekend = state.day_of_week in ("Friday", "Saturday")
@@ -42,8 +34,6 @@ def plan_prices(state, memory) -> dict[str, float]:
 
     # Base multiplier shift by context.
     base_shift = config.BASE_PRICE_SHIFT
-    # DOW-specific delta — finer-grained than weekend/slow_day flags
-    base_shift += DOW_PRICE_DELTA.get(state.day_of_week, 0.0)
     if weekend:
         base_shift += config.WEEKEND_LIFT
     if slow_day:
@@ -56,11 +46,6 @@ def plan_prices(state, memory) -> dict[str, float]:
         base_shift += config.END_GAME_LIFT
     if mid_game and state.reputation_rank >= 3:
         base_shift += config.MID_GAME_LIFT
-    # Last 3 days: aggressive push (every cover counts toward final rep)
-    if state.days_remaining <= 3 and state.reputation_rank >= 3:
-        base_shift += 0.04
-    # Sunny + weekend = peak: extra push for premium
-    sunny_weekend_boost = 0.04 if (sunny and weekend) else 0.0
     if state.walkout_rank >= 2:
         base_shift += config.WALKOUT_DISCOUNT
     if declining and rep_low:
@@ -92,7 +77,7 @@ def plan_prices(state, memory) -> dict[str, float]:
             continue
         # Per-bucket adjustment
         if dish in PREMIUM:
-            mult = 1.00 + base_shift + config.PREMIUM_EXTRA + sunny_weekend_boost
+            mult = 1.00 + base_shift + config.PREMIUM_EXTRA
         elif dish in ELASTIC:
             mult = 1.00 + base_shift + config.ELASTIC_EXTRA
         else:

@@ -12,17 +12,8 @@ DISH_INGS = {dish: list(recipe.keys()) for dish, (_p, recipe) in RECIPES.items()
 def plan_menu(state, memory) -> list[str]:
     """Return list of dishes to enable."""
     available = []
-    # Sole-source ingredient guard: if Salmon supplier is failing badly,
-    # drop salmon dish proactively.
-    salmon_dropped = False
-    if memory.scen_crisis or memory.scen_ban:
-        salmon_arr = memory.supplier_fill.get("Nordic Fish Co.", [])
-        if salmon_arr and (sum(salmon_arr)/len(salmon_arr)) < 0.40 and len(salmon_arr) >= 3:
-            salmon_dropped = True
     for dish in ALL_DISHES:
         if dish not in state.menu_book:
-            continue
-        if dish == "Grilled Salmon" and salmon_dropped:
             continue
         # Check every ingredient: on-hand + pending arriving in ≤2 days
         ok = True

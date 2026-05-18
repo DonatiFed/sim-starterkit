@@ -70,24 +70,8 @@ def plan_orders(state, memory, projection: dict, runway: dict) -> list[dict]:
                 kg_needed = max(5.0, daily_use * 3 * over_order)
                 needs.append((ing, kg_needed, "topup"))
 
-    # Supply crisis: front-load a 6-day buffer on days 1-3 BEFORE fill rates collapse.
-    # Crisis disruption typically ramps mid-game (day 7-12), so buffer must be in
-    # place by day 5. Target: Flour, Fresh Pasta, Mozzarella, Tomato Sauce (high use).
-    if memory.scen_crisis and state.day <= 3:
-        for ing in ["Flour", "Fresh Pasta", "Mozzarella", "Tomato Sauce", "Pepperoni"]:
-            if ing in [n[0] for n in needs]:
-                continue
-            on_hand = state.inventory.get(ing)
-            on_hand_kg = on_hand.total_kg if on_hand else 0.0
-            pending_kg = state.pending_by_ingredient.get(ing, 0.0)
-            daily_use = _compute_daily_use(state, memory, ing)
-            target = daily_use * 7  # 7-day buffer
-            gap = max(0.0, target - on_hand_kg - pending_kg)
-            if gap > 2.0:
-                needs.append((ing, gap * over_order, "crisis_buffer"))
-
     # Sort by urgency
-    rank = {"critical": 0, "high": 1, "crisis_buffer": 2, "medium": 3, "topup": 4}
+    rank = {"critical": 0, "high": 1, "medium": 2, "topup": 3}
     needs.sort(key=lambda x: rank.get(x[2], 9))
 
     spent = 0.0
