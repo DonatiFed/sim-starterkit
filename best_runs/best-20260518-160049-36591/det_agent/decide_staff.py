@@ -71,22 +71,5 @@ def plan_staff(state, memory) -> int:
     # Crisis: keep modest staff (capacity already limited by inventory)
     if memory.scen_crisis:
         target = min(target, dow_default + 1)
-    # Black swan: lean staff (demand often crashes)
-    if memory.scen_black_swan:
-        target = min(target, max(3, dow_default - 1))
-    # Premium pivot: don't over-staff — fewer-but-bigger-spenders
-    if memory.scen_premium_pivot:
-        target = min(target, dow_default)
-    # Feast or famine: react STRONGLY to yesterday's covers
-    if memory.scen_feast_famine and state.day > 1:
-        # Use yesterday's actual covers to set today's capacity
-        from .predict import staff_needed_for as _snf
-        if state.total_covers_yesterday > 200:
-            target = max(target, _snf(state.total_covers_yesterday, state))
-        elif state.total_covers_yesterday < 80:
-            target = min(target, 5)
-    # Silent drift: trim if declining
-    if memory.scen_silent_drift and state.customer_trend == "Declining":
-        target = max(3, target - 1)
 
     return max(STAFF_MIN, min(STAFF_MAX, int(target)))

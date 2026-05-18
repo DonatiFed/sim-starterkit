@@ -85,15 +85,6 @@ def decide_marketing(state, memory) -> int:
     # Post-tourist drop: heavy marketing to retain customers
     if memory.scen_tourist and 5 <= state.day <= 10:
         return MKT_HIGH
-    # Black swan: conserve cash
-    if memory.scen_black_swan:
-        return 0
-    # Premium pivot: low marketing — quality over quantity
-    if memory.scen_premium_pivot:
-        return MKT_LOW if state.day <= 10 else 0
-    # Silent drift: aggressive marketing to halt decline
-    if memory.scen_silent_drift and state.cash > 7000:
-        return MKT_HIGH
     if mode == "heavy":
         if 2 <= state.day <= 22:
             return MKT_HIGH

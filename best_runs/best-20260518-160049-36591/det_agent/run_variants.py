@@ -22,10 +22,10 @@ from pathlib import Path
 
 from . import champion
 
-# v7 champion config: v6_base_09 = 1.10/2/3 + base 0.09 + 0.08 premium + mkt heavy + 0.15 endgame
+# v6 champion config: endgame_15 = 1.10/2/3 + 0.08/0.08 + mkt heavy + 0.15 endgame
 _CHAMP = {
     "DET_OVER_ORDER": "1.10", "DET_BUFFER_FRESH": "2", "DET_BUFFER_DRY": "3",
-    "DET_BASE_PRICE_SHIFT": "0.09", "DET_PREMIUM_EXTRA": "0.08",
+    "DET_BASE_PRICE_SHIFT": "0.08", "DET_PREMIUM_EXTRA": "0.08",
     "DET_MARKETING_MODE": "heavy", "DET_END_GAME_LIFT": "0.15",
 }
 
@@ -38,14 +38,18 @@ def _merge(*configs):
 
 
 VARIANTS: dict[str, dict[str, str]] = {
-    # v7 focused: 4 highest-leverage bold ideas
-    "no_disc_mega":     _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_OVER_ORDER": "1.05"}),
-    "ultra_v7":         _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_OVER_ORDER": "1.05",
-                                         "DET_STAFF_DELTA": "-1",
-                                         "DET_BASE_PRICE_SHIFT": "0.10",
-                                         "DET_MARKETING_MODE": "off"}),
-    "no_mkt_only":      _merge(_CHAMP, {"DET_MARKETING_MODE": "off"}),
-    "lean_no_disc":     _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_STAFF_DELTA": "-1"}),
+    # v7: explore disabling discounts and pushing margins
+    "champ_v7":         _merge(_CHAMP),                              # control
+    "no_discount":      _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1"}),   # never discount
+    "no_disc_no_hh":    _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_HH_MODE": "off"}),
+    "no_disc_prem_10":  _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_PREMIUM_EXTRA": "0.10"}),
+    "no_disc_base_10":  _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_BASE_PRICE_SHIFT": "0.10"}),
+    "no_elastic_cut":   _merge(_CHAMP, {"DET_ELASTIC_OFF": "1"}),
+    "margin_max":       _merge(_CHAMP, {"DET_MARGIN_MAX": "1"}),
+    "no_disc_no_elast": _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_ELASTIC_OFF": "1"}),
+    "kitchen_sink_v7":  _merge(_CHAMP, {"DET_DISCOUNT_OFF": "1", "DET_HH_MODE": "off",
+                                         "DET_PREMIUM_EXTRA": "0.10",
+                                         "DET_BASE_PRICE_SHIFT": "0.09"}),
 }
 
 EVAL_RUNS_DIR = Path("eval_runs")
@@ -107,26 +111,13 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--variants", default="",
                    help="Comma-separated variant names; default all.")
-    p.add_argument("--scenarios", default="",
-                   help="Comma-separated scenarios; empty = auto-fetch from server.")
+    p.add_argument("--scenarios", default="baseline,supply_crisis,tourist_season,renovation")
     p.add_argument("--seeds", default="42,88,123")
     p.add_argument("--url", default=os.getenv("RESTBENCH_URL", "http://52.48.183.209:8001"))
     p.add_argument("--parallel", type=int, default=4,
                    help="Number of variants to run concurrently.")
     p.add_argument("--no-llm", action="store_true")
     args = p.parse_args()
-
-    # Auto-fetch scenarios if not specified
-    if not args.scenarios:
-        try:
-            import httpx as _httpx
-            r = _httpx.get(f"{args.url}/scenarios", timeout=10.0)
-            r.raise_for_status()
-            args.scenarios = ",".join(s["name"] for s in r.json())
-            print(f"Auto-fetched scenarios: {args.scenarios}")
-        except Exception as e:
-            args.scenarios = "baseline,supply_crisis,tourist_season,renovation"
-            print(f"Falling back to default scenarios (fetch error: {e})")
 
     if args.variants:
         names = [n.strip() for n in args.variants.split(",") if n.strip()]

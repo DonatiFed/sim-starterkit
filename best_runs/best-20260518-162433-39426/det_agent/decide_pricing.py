@@ -99,18 +99,20 @@ def plan_prices(state, memory) -> dict[str, float]:
     if memory.scen_crisis and 5 <= state.day <= 20:
         base_shift += 0.03
     if memory.scen_crisis:
-        # Supply-limited → charge more per cover (margin protection)
-        base_shift += 0.04
+        base_shift -= 0.02
     if memory.scen_inflation:
         base_shift += config.INFLATION_LIFT
-    if memory.scen_health and not config.DISCOUNT_OFF:
+    if memory.scen_health:
         base_shift -= 0.05
     # New 2026 scenarios — preemptive responses
-    if memory.scen_black_swan and not config.DISCOUNT_OFF:
+    if memory.scen_black_swan:
+        # Demand may crash → discount to keep volume
         base_shift -= 0.05
     if memory.scen_premium_pivot:
+        # Upscale clientele expects higher prices
         base_shift += 0.07
-    if memory.scen_silent_drift and not config.DISCOUNT_OFF:
+    if memory.scen_silent_drift:
+        # Gradual decline → cut to defend share
         base_shift -= 0.04
     # Generic unknown alert → small defensive lift (a little extra margin)
     if memory.scen_unknown_alert:

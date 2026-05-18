@@ -37,10 +37,6 @@ class Memory:
     scen_inflation: int = 0
     scen_health: int = 0
     scen_ban: int = 0
-    scen_black_swan: int = 0
-    scen_feast_famine: int = 0
-    scen_premium_pivot: int = 0
-    scen_silent_drift: int = 0
     # Unknown alert detected — generic defensive mode
     scen_unknown_alert: int = 0
     # Day the renovation alert fired
@@ -108,9 +104,7 @@ def update(mem: Memory, state) -> Memory:
     # Scenario detection from alerts
     alerts_txt = " ".join(state.alerts).lower()
     from .constants import (ALERT_CRISIS, ALERT_RENOVATION, ALERT_TOURIST,
-                            ALERT_INFLATION, ALERT_HEALTH, ALERT_BAN,
-                            ALERT_BLACK_SWAN, ALERT_FEAST_FAMINE,
-                            ALERT_PREMIUM_PIVOT, ALERT_SILENT_DRIFT)
+                            ALERT_INFLATION, ALERT_HEALTH, ALERT_BAN)
     known_match = False
     if any(k in alerts_txt for k in ALERT_CRISIS):
         mem.scen_crisis = 1
@@ -131,18 +125,6 @@ def update(mem: Memory, state) -> Memory:
         known_match = True
     if any(k in alerts_txt for k in ALERT_BAN):
         mem.scen_ban = 1
-        known_match = True
-    if any(k in alerts_txt for k in ALERT_BLACK_SWAN):
-        mem.scen_black_swan = 1
-        known_match = True
-    if any(k in alerts_txt for k in ALERT_FEAST_FAMINE):
-        mem.scen_feast_famine = 1
-        known_match = True
-    if any(k in alerts_txt for k in ALERT_PREMIUM_PIVOT):
-        mem.scen_premium_pivot = 1
-        known_match = True
-    if any(k in alerts_txt for k in ALERT_SILENT_DRIFT):
-        mem.scen_silent_drift = 1
         known_match = True
     # If alerts exist but none matched known keywords → unknown scenario
     if alerts_txt.strip() and not known_match:

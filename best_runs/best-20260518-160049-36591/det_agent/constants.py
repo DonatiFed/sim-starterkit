@@ -120,14 +120,9 @@ TABLE_CAPACITY_NORMAL = 500   # peak observed 477 covers/day — table+turn cap
 TABLE_CAPACITY_RENOVATION = 250
 
 # Alert keywords → behavioral flags
-ALERT_CRISIS = ("disruption", "shipping", "shortage", "outage", "halted", "halt", "logistics")
-ALERT_RENOVATION = ("renovation", "dining room", "tables unavailable", "construction")
-ALERT_TOURIST = ("tourist", "festival", "surge", "demand spike", "visitors", "convention")
-ALERT_INFLATION = ("inflation", "cost rise", "price increase", "rising prices", "wholesale")
-ALERT_HEALTH = ("scare", "health", "outbreak", "illness", "recall", "contamination", "food safety")
-ALERT_BAN = ("ban", "closed", "prohibit")
-# New 2026 scenarios revealed at eval-time
-ALERT_BLACK_SWAN = ("black swan", "catastroph", "disaster", "emergency", "unprecedented")
-ALERT_FEAST_FAMINE = ("feast", "famine", "alternating", "swing", "cycle", "volatile")
-ALERT_PREMIUM_PIVOT = ("premium", "upscale", "luxury", "fine dining", "high-end", "affluent")
-ALERT_SILENT_DRIFT = ("drift", "decline", "gradual", "slow", "fading", "declining demand")
+ALERT_CRISIS = ("disruption", "shipping", "shortage", "outage", "halted", "halt")
+ALERT_RENOVATION = ("renovation", "dining room", "tables unavailable")
+ALERT_TOURIST = ("tourist", "festival", "surge", "demand spike")
+ALERT_INFLATION = ("inflation", "cost rise", "price increase")
+ALERT_HEALTH = ("scare", "health", "outbreak", "illness", "recall")
+ALERT_BAN = ("ban", "closed")

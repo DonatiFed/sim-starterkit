@@ -22,8 +22,8 @@ def plan_menu(state, memory) -> list[str]:
         ffn_arr = memory.supplier_fill.get("Fresh Farms NL", [])
         if ffn_arr and (sum(ffn_arr)/len(ffn_arr)) < 0.30 and len(ffn_arr) >= 4:
             ffn_collapsed = True
-    # FFN-dependent dishes if collapsed (Chicken is sole-source from FFN)
-    ffn_dishes = {"Chicken Caesar Salad", "Chicken Parmesan"} if ffn_collapsed else set()
+    # FFN-dependent dishes if collapsed (drop only single-source ones)
+    ffn_dishes = {"Chicken Caesar Salad"} if ffn_collapsed else set()
     for dish in ALL_DISHES:
         if dish not in state.menu_book:
             continue
