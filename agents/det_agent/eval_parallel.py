@@ -179,7 +179,11 @@ def evaluate(
     with ThreadPoolExecutor(max_workers=parallel) as pool:
         future_map = {}
         for sc, sd in jobs:
-            team = f"{team_prefix}-{sc[:3]}{sd}-{_team_suffix()}"
+            # If team_prefix starts with "FIXED:", use exact string for all games.
+            if team_prefix.startswith("FIXED:"):
+                team = team_prefix[len("FIXED:"):]
+            else:
+                team = f"{team_prefix}-{sc[:3]}{sd}-{_team_suffix()}"
             fut = pool.submit(_run_one, strategy, sc, sd, base_url, team, capture_days)
             future_map[fut] = (sc, sd, team)
         for fut in as_completed(future_map):
