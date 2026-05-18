@@ -22,11 +22,11 @@ from pathlib import Path
 
 from . import champion
 
-# v6 champion config: endgame_15 = 1.10/2/3 + 0.08/0.08 + mkt heavy + 0.15 endgame
+# v5 champion config: ultra_premium = 1.10/2/3 + 0.08/0.08 + mkt heavy + 0.10 endgame
 _CHAMP = {
     "DET_OVER_ORDER": "1.10", "DET_BUFFER_FRESH": "2", "DET_BUFFER_DRY": "3",
     "DET_BASE_PRICE_SHIFT": "0.08", "DET_PREMIUM_EXTRA": "0.08",
-    "DET_MARKETING_MODE": "heavy", "DET_END_GAME_LIFT": "0.15",
+    "DET_MARKETING_MODE": "heavy", "DET_END_GAME_LIFT": "0.10",
 }
 
 
@@ -38,23 +38,26 @@ def _merge(*configs):
 
 
 VARIANTS: dict[str, dict[str, str]] = {
-    # v6: champion + new rules (crisis stockpile, weekend pre-order, rep-tier, etc)
-    "champ_v6":        _merge(_CHAMP),
-    # Push premium higher
-    "v6_prem_10":      _merge(_CHAMP, {"DET_PREMIUM_EXTRA": "0.10"}),
-    # Tighter base
-    "v6_base_09":      _merge(_CHAMP, {"DET_BASE_PRICE_SHIFT": "0.09"}),
-    "v6_base_10":      _merge(_CHAMP, {"DET_BASE_PRICE_SHIFT": "0.10"}),
-    # Mega-tight
-    "v6_mega":         _merge(_CHAMP, {"DET_OVER_ORDER": "1.05"}),
-    # Weekend lift
-    "v6_weekend":      _merge(_CHAMP, {"DET_WEEKEND_LIFT": "0.08"}),
-    # Endgame push more
-    "v6_endgame_20":   _merge(_CHAMP, {"DET_END_GAME_LIFT": "0.20"}),
-    # Multi-knob: prem + weekend + endgame
-    "v6_combo":        _merge(_CHAMP, {"DET_PREMIUM_EXTRA": "0.10",
-                                       "DET_WEEKEND_LIFT": "0.08",
-                                       "DET_END_GAME_LIFT": "0.20"}),
+    # Control: reproduce champion with new code rules
+    "champ_v5":       _merge(_CHAMP),
+    # Push premium even harder
+    "prem_10":        _merge(_CHAMP, {"DET_PREMIUM_EXTRA": "0.10"}),
+    # Slightly higher base shift
+    "base_09":        _merge(_CHAMP, {"DET_BASE_PRICE_SHIFT": "0.09"}),
+    # Mega-tight orders
+    "mega_tight":     _merge(_CHAMP, {"DET_OVER_ORDER": "1.05"}),
+    # End-game push harder
+    "endgame_15":     _merge(_CHAMP, {"DET_END_GAME_LIFT": "0.15"}),
+    # Inflation prep (price all up by mid-game even without flag)
+    "midgame_push":   _merge(_CHAMP, {"DET_MID_GAME_LIFT": "0.05"}),
+    # Weekend lift bigger
+    "weekend_10":     _merge(_CHAMP, {"DET_WEEKEND_LIFT": "0.07"}),
+    # Combination: prem_10 + endgame_15 + weekend
+    "kitchen_sink":   _merge(_CHAMP, {"DET_PREMIUM_EXTRA": "0.10",
+                                       "DET_END_GAME_LIFT": "0.15",
+                                       "DET_WEEKEND_LIFT": "0.07"}),
+    # Lean staff combo
+    "lean_v5":        _merge(_CHAMP, {"DET_STAFF_DELTA": "-1"}),
 }
 
 EVAL_RUNS_DIR = Path("eval_runs")
@@ -74,7 +77,7 @@ def run_variant(name: str, env_overrides: dict[str, str], scenarios: str, seeds:
         "--seeds", seeds,
         "--url", url,
         "--team-prefix", f"det-{name}",
-        "--parallel", "3",
+        "--parallel", "6",
         "--label", name,
         "--no-capture",
     ]
