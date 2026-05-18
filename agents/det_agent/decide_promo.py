@@ -79,6 +79,12 @@ def decide_marketing(state, memory) -> int:
     # Post-renov: push marketing to capitalize on satisfaction bonus
     if memory.scen_renovation and memory.renov_start + 14 <= state.day <= memory.renov_start + 22:
         return MKT_HIGH
+    # Tourist surge: skip — capacity bound already
+    if memory.scen_tourist and state.day <= 4:
+        return 0
+    # Post-tourist drop: heavy marketing to retain customers
+    if memory.scen_tourist and 5 <= state.day <= 10:
+        return MKT_HIGH
     if mode == "heavy":
         if 2 <= state.day <= 22:
             return MKT_HIGH

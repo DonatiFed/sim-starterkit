@@ -29,6 +29,14 @@ def plan_staff(state, memory) -> int:
             and state.reputation_rank >= 3):
         target = max(target, 14)
 
+    # Excellent rep → demand surges, push staff
+    if state.reputation_band == "Excellent" and state.day_of_week in ("Thursday", "Friday", "Saturday"):
+        target = max(target, 13)
+
+    # Stormy weather on slow day → bare minimum staff
+    if state.weather_today == "stormy" and state.day_of_week in ("Sunday", "Monday"):
+        target = min(target, 4)
+
     # Reactive bump if yesterday had walkouts on a similar day type
     if state.walkout_rank >= 2:  # Some/Many
         # Big bump for Many (3) walkouts

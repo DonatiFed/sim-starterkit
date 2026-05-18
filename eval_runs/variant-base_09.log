@@ -1,0 +1,48 @@
+Agent:     agents.det_agent
+Server:    http://52.48.183.209:8001
+Scenarios: ['baseline', 'supply_crisis', 'tourist_season', 'renovation']
+Seeds:     [42, 88, 123]
+LLM:       OFF
+Running 12 games in parallel (max_workers=6)...
+  done [supply_crisis  s=88] score=  +25171 status=completed (83s)
+  done [baseline       s=123] score=  +40367 status=completed (99s)
+  done [baseline       s=42] score=  +39602 status=completed (101s)
+  done [supply_crisis  s=42] score=  +27468 status=completed (106s)
+  done [baseline       s=88] score=  +37503 status=completed (113s)
+  done [supply_crisis  s=123] score=  +31383 status=completed (118s)
+  done [tourist_season s=42] score=  +52314 status=completed (82s)
+  done [tourist_season s=123] score=  +40695 status=completed (85s)
+  done [renovation     s=42] score=  +19586 status=completed (86s)
+  done [tourist_season s=88] score=  +51178 status=completed (98s)
+  done [renovation     s=123] score=  +13293 status=completed (80s)
+  done [renovation     s=88] score=  +20297 status=completed (91s)
+
+================================================================================
+  EVAL SUMMARY  (204s total)
+================================================================================
+Scenario           Seed      Score     Profit    Walk      Rep      Sat   Waste Status    
+------------------------------------------------------------------------------------------
+baseline             42      39602      39848     150        0        0      96 completed 
+baseline             88      37503      37740     127        0        0     110 completed 
+baseline            123      40367      40554      35        0        0     152 completed 
+renovation           42      19586      20014     284        0        0     143 completed 
+renovation           88      20297      20662     242        0        0     122 completed 
+renovation          123      13293      13788     295        0        0     200 completed 
+supply_crisis        42      27468      27806     156        0        0     182 completed 
+supply_crisis        88      25171      25444     142        0        0     131 completed 
+supply_crisis       123      31383      31635      42        0        0     210 completed 
+tourist_season       42      52314      52607     188        0        0     105 completed 
+tourist_season       88      51178      51512     202        0        0     131 completed 
+tourist_season      123      40695      41195     311        0        0     189 completed 
+------------------------------------------------------------------------------------------
+
+Scenario                Avg        Min        Max  Games
+baseline              39157      37503      40367  3
+renovation            17725      13293      20297  3
+supply_crisis         28007      25171      31383  3
+tourist_season        48062      40695      52314  3
+
+  AVERAGE: +33,238   Bankruptcies: 0/12
+================================================================================
+
+Saved eval_runs/run-20260518-153616-base_09.json

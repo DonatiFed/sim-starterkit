@@ -44,6 +44,27 @@ def plan_prices(state, memory) -> dict[str, float]:
     base_shift = config.BASE_PRICE_SHIFT
     # DOW-specific delta — finer-grained than weekend/slow_day flags
     base_shift += DOW_PRICE_DELTA.get(state.day_of_week, 0.0)
+
+    # Reputation-tier pricing: high rep deserves premium pricing
+    rep_band = state.reputation_band
+    if rep_band == "Excellent":
+        base_shift += 0.05
+    elif rep_band == "Very Good":
+        base_shift += 0.02
+    elif rep_band == "Good":
+        base_shift -= 0.02
+    elif rep_band == "Fair":
+        base_shift -= 0.06
+    elif rep_band == "Poor":
+        base_shift -= 0.10
+
+    # Cash-tier pricing: when flush, we can risk a small demand dip for higher margin
+    if state.cash > 30_000:
+        base_shift += 0.03
+    elif state.cash > 20_000:
+        base_shift += 0.01
+    elif state.cash < 5_000:
+        base_shift -= 0.03
     if weekend:
         base_shift += config.WEEKEND_LIFT
     if slow_day:
